@@ -2,7 +2,9 @@ import paho.mqtt.client as mqtt  # import the client1
 import time
 import database.client as database
 
-TOPICS = ["engine", "tires", "wheel"]
+TOPICS = ["engine", "tires", "brakes_fluid", "fuel", "oil", "battery"]
+UNITS = ["temperature", "pressure", "percentage", "percentage", "percentage", "percentage"]
+messages = {topic: [] for topic in TOPICS}
 
 
 def on_connect(client, userdata, flags, rc):
@@ -10,36 +12,26 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe(topic)
 
 
-messages = {
-    "engine": [],
-    "tires": [],
-    "wheel": [],
-}
-
 def on_message(client, userdata, message):
     global messages
-    if message.topic == "engine":
-        msg = str(message.payload.decode("utf-8"))
-        messages["engine"].append(msg)
-        print("message received ", str(message.payload.decode("utf-8")))
-    if message.topic == "tires":
-        print("message received ", str(message.payload.decode("utf-8")))
-    if message.topic == "wheel":
-        print("message received ", str(message.payload.decode("utf-8")))
+    status, value = str(message.payload.decode("utf-8")).split("-", 1)
+    for topic, unit in zip(TOPICS, UNITS):
+        if message.topic == topic:
+            messages[topic].append({status: {unit: value}})
+            break
 
 
 broker_address = "localhost"
 client = mqtt.Client("main_client")
-client.on_message = on_message  # attach function to callback
-client.on_connect = on_connect  # attach function
-client.connect(broker_address)  # connect to broker
-
+client.on_message = on_message
+client.on_connect = on_connect
+client.connect(broker_address)
 
 
 def main(plate):
     global messages
-    client.loop_start()  # start the loop
+    client.loop_start()
     while True:
-        database.add_engine_info(plate, messages["engine"])
-        time.sleep(10)
-# main()
+        database.update_car_info(plate, messages)
+        time.sleep(15)
+
