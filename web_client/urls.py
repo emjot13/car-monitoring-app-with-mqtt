@@ -8,6 +8,7 @@ urlpatterns = [
     path("add_car", views.add_car_form, name="add_car_form"),
     path("add_car_to_database", views.add_car, name="add_car"),
     path("check_car", views.check_car, name="check_car"),
-    path("check_car_form", views.check_car_form, name="check_car_form"),
+    # path("check_car_form", views.check_car_form, name="check_car_form"),
+    path("see_car_status", views.see_car_status, name="see_car_status"),
 
 ]

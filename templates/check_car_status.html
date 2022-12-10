@@ -17,5 +17,25 @@
     </div>
 </form>
 
+{% if car_status %}
+    <div>
+    {% for item in car_status %}
+        {% for component, data in item.items %}
+            <h1>Component: {{ component }}</h1>
+            {% for info in data %}
+                {% for key, val in info.items %}
+                <h2>Status: {{ key }}</h2>
+                {%  for unit, measurement in val.items %}
+                    <h3>{{ unit }}: {{ measurement }}</h3>
+                {% endfor %}
+            {% endfor %}
+        {%  endfor %}
+    {% endfor %}
+    {% endfor %}
+    </div>
+
+{% endif %}
+
 </body>
 </html>
+

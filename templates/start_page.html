@@ -12,10 +12,12 @@
 <button>Add your car</button>
 </form>
 
-<form method="post" action="check_car_form">
+<form method="get" action="check_car">
     {% csrf_token %}
 <button>Check your car</button>
 </form>
+
+
 
 </body>
 </html>

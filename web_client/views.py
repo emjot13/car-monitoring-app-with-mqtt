@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
 
 import mqtt.client
-import web_client.views
 from database.client import cars_collection
-from mqtt import client, engine, tires, wheel
-
+from mqtt import client, sensor_launcher
+import database.client as database
 import threading
 
 
@@ -22,22 +21,28 @@ def add_car_form(request):
 
 def add_car(request):
     if request.method == "POST":
+        print("Adding")
         plate = request.POST.get("plate")
         car_owner = request.POST.get("car_owner")
-        car = {"plate": plate, "owner": car_owner, "engine_status": [], "tires_status": [], "wheel_status": []}
+        car = {"plate": plate, "owner": car_owner, "car_status": {}}
         cars_collection.insert_one(car)
     return redirect("http://127.0.0.1:8000/")
 
 
-def check_car_form(request):
-    return render(request, "check_car_status.html")
+# def check_car_form(request):
+#     return render(request, "check_car_status.html")
 
+def see_car_status(plate):
+    return database.get_car_info(plate)
 
 def check_car(request):
     if request.method == "POST":
         plate = request.POST.get("plate")
         mqtt_client = threading.Thread(target=mqtt.client.main, args=(plate,))
-        mqtt_engine = threading.Thread(target=mqtt.engine.main)
+        mqtt_sensors = threading.Thread(target=mqtt.sensor_launcher.launch)
         mqtt_client.start()
-        mqtt_engine.start()
+        mqtt_sensors.start()
+        car_status = see_car_status(plate)
+        return render(request, "check_car_status.html", {"car_status": car_status})
+
     return render(request, "check_car_status.html")
