@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add car</title>
+</head>
+<body>
+
+<form action="add_car_to_database" method="post">
+
+    {% csrf_token %}
+    <div>
+            <label for="plate">Car plates: </label>
+            <input type="text" name="plate">
+
+    </div>
+    <div>
+            <label for="car_owner">Car owner: </label>
+            <input type="text" name="car_owner">
+    </div>
+    <div>
+        <button>Add</button>
+    </div>
+
+
+</form>
+</body>
+</html>

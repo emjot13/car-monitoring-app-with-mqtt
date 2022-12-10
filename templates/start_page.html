@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Check your car</title>
+</head>
+<body>
+<h1>Hi, here you can check how is your car doing in real time</h1>
+
+<form method="post" action="add_car">
+    {% csrf_token %}
+<button>Add your car</button>
+</form>
+
+<form method="post" action="check_car_form">
+    {% csrf_token %}
+<button>Check your car</button>
+</form>
+
+</body>
+</html>
