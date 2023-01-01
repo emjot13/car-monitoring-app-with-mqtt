@@ -39,7 +39,6 @@ def find_car_by_plate(plate):
 
 
 def update_car(id, plate, owner, brand):
-    print(id)
     cars_collection.update_one({"_id": id}, {"$set": {"plate": plate, "owner": owner, "brand": brand}})
 
 

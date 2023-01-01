@@ -4,7 +4,9 @@ from . import views
 app_name = "web_client"
 
 urlpatterns = [
+    path('', views.start_page, name="start_page"),
     path('login', views.login, name="login"),
+
     path("register", views.register, name="register"),
     path("start", views.start, name="start"),
     path("add_car", views.add_car_form, name="add_car_form"),

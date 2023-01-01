@@ -18,18 +18,18 @@ def login(request):
         if user is not None:
             user_hashed_password = user["password"]
             if user_hashed_password == hash_password(password):
-                print("ok")
-                return render(request, "start_page.html")
+                return render(request, "main_page.html")
 
     return render(request, "login.html")
 
+def start_page(request):
+    return render(request, "start_page.html")
 
 def register(request):
     if request.method == "POST":
         login = request.POST.get("login")
         password = request.POST.get("pass")
         password1 = request.POST.get("pass1")
-        print("here")
         if password1 == password:
             hashed_password = hash_password(password)
             users_collection.insert_one({"login": login, "password": hashed_password})
@@ -39,7 +39,7 @@ def register(request):
 
 
 def start(request):
-    return render(request, "start_page.html")
+    return render(request, "main_page.html")
 
 
 def see_my_cars(request):
