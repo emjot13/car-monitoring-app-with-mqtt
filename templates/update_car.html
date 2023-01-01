@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update</title>
+</head>
+<body>
+
+<form action="update_car" method="post">
+    {% csrf_token %}
+        <div>
+            <label for="plate">Car plates: </label>
+            <input type="text" placeholder={{ car.plate }} value={{ car.plate }} name="plate">
+
+    </div>
+    <div>
+            <label for="car_owner">Car owner: </label>
+            <input type="text" placeholder={{ car.owner }} value={{ car.owner }} name="owner">
+    </div>
+
+    <div>
+            <label for="brand">Brand: </label>
+            <input type="text" placeholder={{ car.brand }} value={{ car.brand }} name="brand">
+    </div>
+    <input type="hidden" name="id" value={{ car.id }}>
+
+    <div>
+        <button>Change</button>
+    </div>
+</form>
+
+</body>
+</html>

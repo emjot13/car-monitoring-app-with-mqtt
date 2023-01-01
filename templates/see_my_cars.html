@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My cars</title>
+</head>
+<body>
+
+<form action="see_my_cars" method="post">
+    {% csrf_token %}
+    <div>
+        <label for="plate">Owner: </label>
+        <input type="text" name="owner" required >
+    </div>
+    <div>
+        <label for="plate">Brand: </label>
+        <input type="text" name="brand">
+    </div>
+    <div>
+        <button>Check</button>
+    </div>
+</form>
+<br><br>
+
+{% if cars %}
+    {% for car in cars %}
+        <hr />
+        <div>
+        <div>
+            Plates: {{ car.plate }}
+        </div>
+            <div>Owner: {{ car.owner }}</div>
+            <div>            Brand: {{ car.brand }}</div>
+
+        <form action="delete_car" method="post">
+                {% csrf_token %}
+            <input type="hidden" name="id" value={{ car.id }}>
+                <button>Delete</button>
+        </form>
+            <form action="update_car_form" method="post">
+                {% csrf_token %}
+            <input type="hidden" name="id" value={{ car.id }}>
+                <button>Change</button>
+        </form>
+        </div>
+
+    {% endfor %}
+{% endif %}
+</body>
+</html>

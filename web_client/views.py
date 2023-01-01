@@ -1,39 +1,106 @@
+from bson.objectid import ObjectId
 from django.shortcuts import render, redirect
 
 import mqtt.client
 from database.client import cars_collection
+from database.client import users_collection
 from mqtt import client, sensor_launcher
 import database.client as database
 import threading
+from database.hash_passwords import hash_password
+
+
+def login(request):
+    if request.method == 'POST':
+        login = request.POST.get("login")
+        password = request.POST.get("pass")
+        user = users_collection.find_one({"login": login})
+        if user is not None:
+            user_hashed_password = user["password"]
+            if user_hashed_password == hash_password(password):
+                print("ok")
+                return render(request, "start_page.html")
+
+    return render(request, "login.html")
+
+
+def register(request):
+    if request.method == "POST":
+        login = request.POST.get("login")
+        password = request.POST.get("pass")
+        password1 = request.POST.get("pass1")
+        print("here")
+        if password1 == password:
+            hashed_password = hash_password(password)
+            users_collection.insert_one({"login": login, "password": hashed_password})
+            return render(request, "login.html")
+
+    return render(request, "register.html")
 
 
 def start(request):
     return render(request, "start_page.html")
 
 
+def see_my_cars(request):
+    if request.method == "POST" and "owner" in request.POST:
+        owner = request.POST.get("owner")
+        brand = request.POST.get("brand")
+        if brand:
+            cars = database.find_cars(owner, brand)
+        else:
+            cars = database.find_cars_by_owner(owner)
+
+        cars = list(cars)
+        for car in cars:
+            car["id"] = car["_id"]
+        return render(request, "see_my_cars.html", {"cars": cars})
+
+    return render(request, "see_my_cars.html")
+
+
+def delete_car(request):
+    id = request.POST.get("id")
+    id = ObjectId(id)
+    database.delete_car(id)
+    return render(request, "see_my_cars.html")
+
 
 def add_car_form(request):
-    # mqtt.client.main()
-    # mqtt.engine.main()
-
     return render(request, "add_car.html")
+
+
+def update_car(request):
+    id = request.POST.get("id")
+    id = ObjectId(id)
+    plate = request.POST.get("plate")
+    owner = request.POST.get("owner")
+    brand = request.POST.get("brand")
+    database.update_car(id, plate, owner, brand)
+    return render(request, "see_my_cars.html")
+
+
+def update_car_form(request):
+    id = request.POST.get("id")
+    mongo_id = ObjectId(id)
+    car = database.find_car_by_id(mongo_id)
+    car["id"] = id
+    return render(request, "update_car.html", {"car": car})
 
 
 def add_car(request):
     if request.method == "POST":
-        print("Adding")
         plate = request.POST.get("plate")
         car_owner = request.POST.get("car_owner")
-        car = {"plate": plate, "owner": car_owner, "car_status": {}}
+        brand = request.POST.get("brand")
+        car = {"plate": plate, "owner": car_owner, "brand": brand, "car_status": {}}
         cars_collection.insert_one(car)
-    return redirect("http://127.0.0.1:8000/")
+    return redirect("http://127.0.0.1:8000/start")
 
-
-# def check_car_form(request):
-#     return render(request, "check_car_status.html")
 
 def see_car_status(plate):
     return database.get_car_info(plate)
+
 
 def check_car(request):
     if request.method == "POST":
