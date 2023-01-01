@@ -16,11 +16,13 @@
         <button>Check</button>
     </div>
 </form>
+<br> <br>
 
 {% if car_status %}
     <div>
     {% for item in car_status %}
         {% for component, data in item.items %}
+            <hr />
             <h1>Component: {{ component }}</h1>
             {% for info in data %}
                 {% for key, val in info.items %}
@@ -31,6 +33,7 @@
             {% endfor %}
         {%  endfor %}
     {% endfor %}
+
     {% endfor %}
     </div>
 
